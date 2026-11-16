@@ -1,0 +1,22 @@
+[project]
+name = "finresearch"
+version = "0.1.0"
+description = "Swing hierarchy research (minor/intermediate/major) with light-theme charting"
+readme = "README.md"
+authors = [
+    { name = "Dakotah Torres", email = "dtorres@dtdevtech.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "lightweight-charts>=2.1",
+    "numpy>=2.0",
+    "pandas>=3.1.1",
+    "pywebview[qt]>=6.2.1",
+]
+
+[project.scripts]
+finresearch = "finresearch:main"
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"
