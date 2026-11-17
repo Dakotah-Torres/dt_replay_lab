@@ -4,16 +4,16 @@ Research sandbox for splitting price action into **minor / intermediate / major*
 
 ```
 src/finresearch/
-  engine.py      engine.run(data, *indicators): the replay entry point
-  indicator.py   Indicator / BatchIndicator contract, Value / Mark / Draw outputs
-  recording.py   runs indicators once, answers "what is visible at bar N?"
-  player.py      replay window: play / pause / step / rewind
-  checks.py      lookahead checker
-  indicators/    SMA, RSI, SwingIndicator (templates for your own)
-  data.py        load_ohlc(), normalize_ohlc(), make_test_data()
-  swings.py      Swing, detect_minor_swings(), promote(), build_hierarchy()
-  visualizer.py  Visualizer (candles, indicators, markers, drawings)
-data/            sample csv files
+  __init__.py       public API + main()
+  cli/              `finresearch new`: scaffold.py
+  data/             data.py: load_ohlc, normalize_ohlc, make_test_data
+  indicators/       indicator.py (the contract), swing.py (streaming), swings.py (batch),
+                    moving_average.py (SMA, RSI)
+  engine/           engine.py (run / record / check), contract.py, checks.py
+    player/         player.py: the replay window
+  viz/              recording.py (what's visible at bar N), visualizer.py (theme + static chart)
+data/               sample csv files (outside the package)
+tests/  docs/
 ```
 
 Run the demo: `uv run finresearch` (or `uv run python -m finresearch`).

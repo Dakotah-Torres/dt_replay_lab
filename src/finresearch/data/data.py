@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 OHLC = ["open", "high", "low", "close"]
-DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+DATA_DIR = Path(__file__).resolve().parents[3] / "data"
 
 
 def normalize_ohlc(df: pd.DataFrame) -> pd.DataFrame:

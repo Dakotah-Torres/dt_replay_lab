@@ -8,7 +8,7 @@ from finresearch import (
     Indicator, IndicatorError, Draw, build_hierarchy, check_contract, check_lookahead, hline,
     make_test_data, normalize_ohlc,
 )
-from finresearch.scaffold import new_indicator
+from finresearch.cli.scaffold import new_indicator
 
 DF = normalize_ohlc(make_test_data(600))
 

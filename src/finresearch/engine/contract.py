@@ -20,10 +20,10 @@ from typing import Literal
 
 import pandas as pd
 
-from .checks import check_lookahead
-from .data import normalize_ohlc
-from .indicator import BatchIndicator, Indicator, SeriesSpec, Value
-from .recording import Recording
+from finresearch.data import normalize_ohlc
+from finresearch.engine.checks import check_lookahead
+from finresearch.indicators.indicator import BatchIndicator, Indicator, SeriesSpec, Value
+from finresearch.viz.recording import Recording
 
 SLOW_MS_PER_BAR = 2.0
 

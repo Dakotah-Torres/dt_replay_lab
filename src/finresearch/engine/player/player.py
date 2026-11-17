@@ -14,8 +14,8 @@ import time
 
 import pandas as pd
 
-from .recording import Recording
-from .visualizer import PALETTE, THEME, apply_theme
+from finresearch.viz.recording import Recording
+from finresearch.viz.visualizer import PALETTE, THEME, apply_theme
 
 SPEEDS = ("1/s", "2/s", "5/s", "10/s", "25/s", "60/s")
 

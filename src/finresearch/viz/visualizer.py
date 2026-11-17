@@ -20,7 +20,7 @@ from typing import Any, Iterable, Sequence
 
 import pandas as pd
 
-from .data import normalize_ohlc
+from finresearch.data import normalize_ohlc
 
 THEME = {
     "bg": "#ffffff",

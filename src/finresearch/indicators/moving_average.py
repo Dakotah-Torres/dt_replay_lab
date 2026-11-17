@@ -1,7 +1,7 @@
 """Small streaming indicators: a template for writing your own."""
 from __future__ import annotations
 
-from ..indicator import Bars, Indicator, SeriesSpec, Value
+from .indicator import Bars, Indicator, SeriesSpec, Value
 
 
 class SMA(Indicator):

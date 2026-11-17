@@ -11,11 +11,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from .contract import Report, check_contract
-from .data import load_ohlc, normalize_ohlc
-from .indicator import Indicator
-from .player import Player
-from .recording import Recording
+from finresearch.data import load_ohlc, normalize_ohlc
+from finresearch.engine.contract import Report, check_contract
+from finresearch.engine.player import Player
+from finresearch.indicators.indicator import Indicator
+from finresearch.viz.recording import Recording
 
 
 def _load(data) -> pd.DataFrame:

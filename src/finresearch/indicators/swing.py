@@ -8,8 +8,8 @@ promotes it.
 """
 from __future__ import annotations
 
-from ..indicator import Bars, Indicator, Mark
-from ..visualizer import SWING_STYLE
+from .indicator import Bars, Indicator, Mark
+from finresearch.viz.visualizer import SWING_STYLE
 
 
 class SwingIndicator(Indicator):
