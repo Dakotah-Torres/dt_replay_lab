@@ -1,48 +1,15 @@
-"""Data helpers: load OHLC frames and generate synthetic test data."""
+"""Connection: get a raw table from a source. No cleaning, no checks."""
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-OHLC = ["open", "high", "low", "close"]
 DATA_DIR = Path(__file__).resolve().parents[3] / "data"
 
 
-def normalize_ohlc(df: pd.DataFrame) -> pd.DataFrame:
-    """Return a copy with lowercase columns and a ``time`` column.
-
-    Accepts a frame that already has a ``time``/``date``/``datetime`` column
-    or one indexed by a DatetimeIndex. The index is reset to 0..n-1 so that
-    bar numbers line up with ``Swing.index``.
-    """
-    df = df.copy()
-    df.columns = [str(c).lower() for c in df.columns]
-
-    if "time" not in df.columns:
-        for alt in ("datetime", "date", "timestamp"):
-            if alt in df.columns:
-                df = df.rename(columns={alt: "time"})
-                break
-        else:
-            if isinstance(df.index, pd.DatetimeIndex):
-                df = df.rename_axis("time").reset_index()
-            else:
-                raise ValueError("DataFrame needs a 'time' column or a DatetimeIndex")
-
-    missing = [c for c in OHLC if c not in df.columns]
-    if missing:
-        raise ValueError(f"DataFrame is missing columns: {missing}")
-
-    # lightweight-charts converts with `astype("int64") // 10**9`, which assumes
-    # nanoseconds. pandas 3 defaults to microseconds, which collapses bars onto
-    # duplicate timestamps and makes the chart throw "Value is null".
-    df["time"] = pd.to_datetime(df["time"]).astype("datetime64[ns]")
-    return df.sort_values("time").reset_index(drop=True)
-
-
-def load_ohlc(path: str | Path) -> pd.DataFrame:
-    """Load an OHLC(V) csv into the normalized shape."""
-    return normalize_ohlc(pd.read_csv(path))
+def read_csv(path: str | Path) -> pd.DataFrame:
+    """Raw csv contents, exactly as pandas reads them."""
+    return pd.read_csv(path)
 
 
 def _session_times(n_bars: int, start: str = "2026-01-05", freq_min: int = 5) -> pd.DatetimeIndex:
@@ -56,7 +23,7 @@ def _session_times(n_bars: int, start: str = "2026-01-05", freq_min: int = 5) ->
 
 def make_test_data(n_bars: int = 1000, seed: int = 42, start_price: float = 4500.0,
                    tick: float = 0.25) -> pd.DataFrame:
-    """Synthetic intraday futures-style bars (default 5 minute, RTH sessions).
+    """Synthetic source: intraday futures-style bars (default 5 minute, RTH sessions).
 
     Layered slow waves give swings at three scales, on top of a random walk
     with volatility clustering and a U-shaped intraday range. Includes
