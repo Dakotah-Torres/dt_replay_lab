@@ -20,7 +20,7 @@ from typing import Any, Iterable, Sequence
 
 import pandas as pd
 
-from finresearch.data import normalize_ohlc
+from dt_replay_lab.data import normalize_ohlc
 
 THEME = {
     "bg": "#ffffff",
@@ -72,7 +72,7 @@ class Visualizer:
     def __init__(
         self,
         df: pd.DataFrame,
-        title: str = "finresearch",
+        title: str = "dt_replay_lab",
         width: int = 1400,
         height: int = 850,
         volume: bool = True,

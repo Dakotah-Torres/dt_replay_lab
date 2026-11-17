@@ -1,5 +1,5 @@
 [project]
-name = "finresearch"
+name = "dt-replay-lab"
 version = "0.1.0"
 description = "Swing hierarchy research (minor/intermediate/major) with light-theme charting"
 readme = "README.md"
@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-finresearch = "finresearch:main"
+dt-replay-lab = "dt_replay_lab:main"
 
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]

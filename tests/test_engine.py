@@ -3,12 +3,12 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from finresearch import (
+from dt_replay_lab import (
     SMA, RSI, BatchIndicator, LookaheadError, Mark, Recording, SeriesSpec, SwingIndicator, Value,
     Indicator, IndicatorError, Draw, build_hierarchy, check_contract, check_lookahead, hline,
     make_test_data, normalize_ohlc,
 )
-from finresearch.cli.scaffold import new_indicator
+from dt_replay_lab.cli.scaffold import new_indicator
 
 DF = normalize_ohlc(make_test_data(600))
 

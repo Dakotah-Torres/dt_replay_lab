@@ -14,14 +14,14 @@ import time
 
 import pandas as pd
 
-from finresearch.viz.recording import Recording
-from finresearch.viz.visualizer import PALETTE, THEME, apply_theme
+from dt_replay_lab.viz.recording import Recording
+from dt_replay_lab.viz.visualizer import PALETTE, THEME, apply_theme
 
 SPEEDS = ("1/s", "2/s", "5/s", "10/s", "25/s", "60/s")
 
 
 class Player:
-    def __init__(self, recording: Recording, title: str = "finresearch replay",
+    def __init__(self, recording: Recording, title: str = "dt_replay_lab replay",
                  start: int | None = None, speed: str = "10/s",
                  width: int = 1500, height: int = 900) -> None:
         self.rec = recording

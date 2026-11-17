@@ -1,6 +1,6 @@
 """Minor / intermediate / major swings as a streaming indicator.
 
-Same rules as ``finresearch.swings`` (strict ties, promote when beyond the
+Same rules as ``dt_replay_lab.swings`` (strict ties, promote when beyond the
 previous and next same-kind swing), but computed bar by bar. A swing is
 emitted on the bar that confirms it, so on screen it appears ``n`` bars after
 the candle it marks -- and is re-marked at a higher level when a later swing
@@ -9,7 +9,7 @@ promotes it.
 from __future__ import annotations
 
 from .indicator import Bars, Indicator, Mark
-from finresearch.viz.visualizer import SWING_STYLE
+from dt_replay_lab.viz.visualizer import SWING_STYLE
 
 
 class SwingIndicator(Indicator):

@@ -20,10 +20,10 @@ from typing import Literal
 
 import pandas as pd
 
-from finresearch.data import normalize_ohlc
-from finresearch.engine.checks import check_lookahead
-from finresearch.indicators.indicator import BatchIndicator, Indicator, SeriesSpec, Value
-from finresearch.viz.recording import Recording
+from dt_replay_lab.data import normalize_ohlc
+from dt_replay_lab.engine.checks import check_lookahead
+from dt_replay_lab.indicators.indicator import BatchIndicator, Indicator, SeriesSpec, Value
+from dt_replay_lab.viz.recording import Recording
 
 SLOW_MS_PER_BAR = 2.0
 
@@ -67,7 +67,7 @@ def _structure(ind) -> list[tuple[str, str, str]]:
     out = []
     if not isinstance(ind, Indicator):
         return [("FAIL", "not_indicator",
-                 f"{type(ind).__name__} must subclass finresearch.Indicator (or BatchIndicator)")]
+                 f"{type(ind).__name__} must subclass dt_replay_lab.Indicator (or BatchIndicator)")]
     if isinstance(ind, BatchIndicator):
         if type(ind).compute is BatchIndicator.compute:
             out.append(("FAIL", "no_compute", "BatchIndicator must implement compute(self, df)"))

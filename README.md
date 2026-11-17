@@ -1,11 +1,11 @@
-# finresearch
+# dt-replay-lab
 
 Research sandbox for splitting price action into **minor / intermediate / major** swings, with a light-theme chart visualizer.
 
 ```
-src/finresearch/
+src/dt_replay_lab/
   __init__.py       public API + main()
-  cli/              `finresearch new`: scaffold.py
+  cli/              `dt-replay-lab new`: scaffold.py
   data/             data.py: load_ohlc, normalize_ohlc, make_test_data
   indicators/       indicator.py (the contract), swing.py (streaming), swings.py (batch),
                     moving_average.py (SMA, RSI)
@@ -16,12 +16,12 @@ data/               sample csv files (outside the package)
 tests/  docs/
 ```
 
-Run the demo: `uv run finresearch` (or `uv run python -m finresearch`).
+Run the demo: `uv run dt-replay-lab` (or `uv run python -m dt_replay_lab`).
 
 ## Replay engine
 
 ```python
-from finresearch import engine, SMA, RSI, SwingIndicator, make_test_data
+from dt_replay_lab import engine, SMA, RSI, SwingIndicator, make_test_data
 
 engine.run(make_test_data(), SMA(20), RSI(14), SwingIndicator(n=5))
 ```
@@ -33,10 +33,10 @@ How it stays honest: the indicator is fed one bar at a time and only sees bars u
 
 ### Writing an indicator
 
-Start with `uv run finresearch new my_idea`, which writes a ready-to-edit file. The full rules are in [docs/indicator-contract.md](docs/indicator-contract.md). Short version:
+Start with `uv run dt-replay-lab new my_idea`, which writes a ready-to-edit file. The full rules are in [docs/indicator-contract.md](docs/indicator-contract.md). Short version:
 
 ```python
-from finresearch import engine, Indicator, Mark, SMA, hline
+from dt_replay_lab import engine, Indicator, Mark, SMA, hline
 
 class Breakout(Indicator):
     def __init__(self, n=20):
@@ -60,12 +60,12 @@ engine.run("data/my.csv", Breakout(20), SMA(50))
 - `engine.check(df, indicator)` checks the whole contract (structure, crashes, determinism, lookahead) and prints PASS/WARN/FAIL per rule.
 - `engine.record(df, ...)` gives the `Recording` with no window; `rec.visualizer(cursor)` gives a static chart at any bar.
 
-Use it from another project: `uv add --editable /path/to/finresearch` (or `pip install -e`).
+Use it from another project: `uv add --editable /path/to/dt-replay-lab` (or `pip install -e`).
 
 ## Swings
 
 ```python
-from finresearch import load_ohlc, build_hierarchy
+from dt_replay_lab import load_ohlc, build_hierarchy
 
 df = load_ohlc("data/swing_test.csv")        # needs time/open/high/low/close
 levels = build_hierarchy(df, n=5)            # {1: minor, 2: intermediate, 3: major}
@@ -77,7 +77,7 @@ levels = build_hierarchy(df, n=5)            # {1: minor, 2: intermediate, 3: ma
 ## Visualizer
 
 ```python
-from finresearch import Visualizer
+from dt_replay_lab import Visualizer
 
 viz = Visualizer(df, title="ES 5m")
 viz.add_line(df.close.rolling(20).mean(), "SMA 20")                 # overlay

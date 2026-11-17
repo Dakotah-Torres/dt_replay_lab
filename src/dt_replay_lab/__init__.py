@@ -1,4 +1,4 @@
-"""finresearch: indicator replay engine, swing hierarchy research, light-theme charting."""
+"""dt_replay_lab: indicator replay engine, swing hierarchy research, light-theme charting."""
 from . import engine
 from .data import DATA_DIR, load_ohlc, make_test_data, normalize_ohlc
 from .engine.checks import check_lookahead
@@ -29,9 +29,9 @@ __all__ = [
 
 
 def main() -> None:
-    """Entry point (`finresearch` / `python -m finresearch`): replay demo.
+    """Entry point (`dt-replay-lab` / `python -m dt_replay_lab`): replay demo.
 
-    `finresearch new <name>` writes a ready-to-edit indicator file instead.
+    `dt-replay-lab new <name>` writes a ready-to-edit indicator file instead.
     """
     import sys
     if sys.argv[1:2] == ["new"]:

@@ -8,7 +8,7 @@ confirmed at bar 45 appears at bar 45 -- exactly as it would live.
 
 A *batch* indicator (``BatchIndicator``) computes everything in one
 vectorised pass and must say on which bar each output became knowable.
-``finresearch.check_lookahead`` verifies it didn't cheat.
+``dt_replay_lab.check_lookahead`` verifies it didn't cheat.
 
 Outputs
 -------
@@ -156,7 +156,7 @@ class BatchIndicator(Indicator):
 
     ``compute`` yields ``(emitted_at, output)`` pairs, where ``emitted_at`` is
     the first bar on which that output could have been known. Use
-    ``finresearch.check_lookahead`` to confirm that claim.
+    ``dt_replay_lab.check_lookahead`` to confirm that claim.
     """
 
     def compute(self, df) -> Iterable[tuple[int, Output]]:

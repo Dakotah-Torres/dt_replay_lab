@@ -11,8 +11,8 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-from finresearch.data import normalize_ohlc
-from finresearch.indicators.indicator import (
+from dt_replay_lab.data import normalize_ohlc
+from dt_replay_lab.indicators.indicator import (
     DRAW_ARGS, MARK_POSITIONS, MARK_SHAPES, BatchIndicator, Bars, Draw, Indicator, Mark, Output,
     SeriesSpec, Value,
 )
@@ -225,7 +225,7 @@ class Recording:
     # ── bridge to the static Visualizer ───────────────────────
     def visualizer(self, cursor: int | None = None, **kwargs):
         """A static ``Visualizer`` showing the state at ``cursor`` (default: end)."""
-        from finresearch.viz.visualizer import Visualizer
+        from dt_replay_lab.viz.visualizer import Visualizer
         cursor = self.n - 1 if cursor is None else cursor
         viz = Visualizer(self.df.iloc[:cursor + 1], **kwargs)
         for name, frame in self.lines_at(cursor).items():

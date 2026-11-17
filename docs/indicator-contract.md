@@ -1,6 +1,6 @@
 # Indicator contract
 
-To start research: `uv run finresearch new my_idea` writes `my_idea.py` with every part below already in place. Fill in the logic, then `uv run python my_idea.py` checks it and opens the replay.
+To start research: `uv run dt-replay-lab new my_idea` writes `my_idea.py` with every part below already in place. Fill in the logic, then `uv run python my_idea.py` checks it and opens the replay.
 
 ## What you write
 

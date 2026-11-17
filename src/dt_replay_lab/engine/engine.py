@@ -1,6 +1,6 @@
 """The entry point:  engine.run(data, SwingIndicator(n=5), SMA(20))
 
-    from finresearch import engine
+    from dt_replay_lab import engine
     engine.run(df, SMA(20), SwingIndicator(n=5))        # open the replay window
     rec = engine.record(df, SMA(20))                    # no GUI, just the data
     engine.check(df, SwingIndicator(n=5))               # does it follow the contract?
@@ -11,11 +11,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from finresearch.data import load_ohlc, normalize_ohlc
-from finresearch.engine.contract import Report, check_contract
-from finresearch.engine.player import Player
-from finresearch.indicators.indicator import Indicator
-from finresearch.viz.recording import Recording
+from dt_replay_lab.data import load_ohlc, normalize_ohlc
+from dt_replay_lab.engine.contract import Report, check_contract
+from dt_replay_lab.engine.player import Player
+from dt_replay_lab.indicators.indicator import Indicator
+from dt_replay_lab.viz.recording import Recording
 
 
 def _load(data) -> pd.DataFrame:
@@ -34,7 +34,7 @@ def record(data, *indicators: Indicator) -> Recording:
 
 
 def run(data, *indicators: Indicator, start: int | None = None, speed: str = "10/s",
-        title: str = "finresearch replay", width: int = 1500, height: int = 900) -> Player:
+        title: str = "dt_replay_lab replay", width: int = 1500, height: int = 900) -> Player:
     """Run indicators over ``data`` and open the replay window (blocks until closed).
 
     ``data`` is a DataFrame (time/open/high/low/close[/volume], or a

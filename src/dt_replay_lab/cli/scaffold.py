@@ -1,4 +1,4 @@
-"""``finresearch new my_idea``: write a ready-to-run indicator file."""
+"""``dt-replay-lab new my_idea``: write a ready-to-run indicator file."""
 from __future__ import annotations
 
 import re
@@ -10,7 +10,7 @@ TEMPLATE = '''"""{title}: <one line - what should this indicator show you?>.
 Run it:   uv run python {filename}
 Contract: docs/indicator-contract.md
 """
-from finresearch import Indicator, Mark, SeriesSpec, Value, engine, hline, make_test_data
+from dt_replay_lab import Indicator, Mark, SeriesSpec, Value, engine, hline, make_test_data
 # also available: trend, box, vline, vspan (drawings), BatchIndicator (vectorised)
 
 
@@ -62,7 +62,7 @@ if __name__ == "__main__":
 def _names(raw: str) -> tuple[str, str, str]:
     words = [w for w in re.split(r"[^0-9a-zA-Z]+", raw) if w]
     if not words:
-        raise SystemExit("usage: finresearch new <name>   e.g. finresearch new breakout")
+        raise SystemExit("usage: dt-replay-lab new <name>   e.g. dt-replay-lab new breakout")
     snake = "_".join(w.lower() for w in words)
     cls = "".join(w[:1].upper() + w[1:] for w in words)
     if cls[0].isdigit():
@@ -81,6 +81,6 @@ def new_indicator(name: str, directory: str | Path = ".") -> Path:
 
 def main(argv: list[str]) -> None:
     if not argv or argv[0] in ("-h", "--help"):
-        raise SystemExit("usage: finresearch new <name> [directory]")
+        raise SystemExit("usage: dt-replay-lab new <name> [directory]")
     path = new_indicator(argv[0], argv[1] if len(argv) > 1 else ".")
     print(f"created {path}\nnext:  uv run python {path}")

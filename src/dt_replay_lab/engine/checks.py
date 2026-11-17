@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from finresearch.indicators.indicator import Indicator
-from finresearch.viz.recording import Recording
+from dt_replay_lab.indicators.indicator import Indicator
+from dt_replay_lab.viz.recording import Recording
 
 
 def check_lookahead(data, indicator: Indicator, cuts: int = 8, seed: int = 0) -> list[str]:
