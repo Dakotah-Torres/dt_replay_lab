@@ -26,7 +26,15 @@ from dt_replay_lab import engine, SMA, RSI, SwingIndicator, make_test_data
 engine.run(make_test_data(), SMA(20), RSI(14), SwingIndicator(n=5))
 ```
 
-Opens a window that plays candles in one at a time. Buttons: `|<  -10  -1  Play  +1  +10  >|` and a speed switcher.
+Two run types:
+
+```python
+from dt_replay_lab import RunType
+engine.run(df, SMA(20))                              # RunType.PRERUN (default): compute all, then replay with rewind
+engine.run(df, SMA(20), run_type=RunType.LIVERUN)    # compute each bar as it arrives, like a live feed; no rewind
+```
+
+PRERUN opens a window that plays candles in one at a time. Buttons: `|<  -10  -1  Play  +1  +10  >|` and a speed switcher.
 Keys: **Space** play/pause, **←/→** step 1, **Shift+←/→** step 10.
 
 How it stays honest: the indicator is fed one bar at a time and only sees bars up to the current one (`Bars` is a read-only prefix view). Everything it emits is stamped with the bar it was emitted on, and the replay shows it from that bar onward, so a swing confirmed 5 bars late appears 5 bars late. Rewinding just moves the cursor, so bar N always looks the same however you got there.

@@ -1,24 +1,7 @@
-"""The indicator contract: what an indicator sees, and what it may emit.
-
-A *streaming* indicator is fed one bar at a time via ``on_bar``. It only
-ever sees bars up to and including the current one, so it cannot peek at the
-future. Whatever it yields is stamped with the bar it was emitted on, and the
-replay shows it from that bar onward. A swing high found at bar 40 but only
-confirmed at bar 45 appears at bar 45 -- exactly as it would live.
-
-A *batch* indicator (``BatchIndicator``) computes everything in one
-vectorised pass and must say on which bar each output became knowable.
-``dt_replay_lab.check_lookahead`` verifies it didn't cheat.
-
-Outputs
--------
-``Value``  a point on a declared line/histogram series
-``Mark``   a marker on a candle (may refer to an earlier bar than it is
-           emitted on, e.g. a swing confirmed ``n`` bars later)
-``Draw``   a drawing: hline, vline, trend, box, vspan
-"""
+"""The indicator contract: what an indicator receives and what it may emit."""
 from __future__ import annotations
 
+import inspect
 from dataclasses import dataclass, field
 from typing import Hashable, Iterable, Literal
 
@@ -30,7 +13,8 @@ Position = Literal["above", "below"]
 @dataclass(frozen=True)
 class Bars:
     """Read-only view of every bar up to and including the current one."""
-    i: int                     # index of the current (latest) bar
+
+    i: int
     time: np.ndarray
     open: np.ndarray
     high: np.ndarray
@@ -38,50 +22,58 @@ class Bars:
     close: np.ndarray
     volume: np.ndarray
 
+
     def __len__(self) -> int:
         return self.i + 1
 
 
 @dataclass(frozen=True)
 class SeriesSpec:
-    """Declares a line/histogram an indicator draws values onto."""
-    name: str                          # unique across all indicators in a run
-    pane: str = "main"                 # "main" overlays price, else a sub-pane name
+    """A line or histogram an indicator draws values onto."""
+
+    name: str
+    pane: str = "main"                  # "main" overlays price, anything else is a sub-pane
     color: str | None = None
     width: int = 2
     style: str = "solid"
     kind: Literal["line", "histogram"] = "line"
-    levels: tuple[float, ...] = ()     # horizontal guides (e.g. RSI 30/70)
-    height: float = 0.2                # sub-pane height as a fraction of the window
+    levels: tuple[float, ...] = ()      # horizontal guide lines
+    height: float = 0.2                 # sub-pane height as a fraction of the window
 
 
 @dataclass(frozen=True)
 class Value:
+    """A point on a declared series; index defaults to the bar it was emitted on."""
+
     series: str
     value: float
-    index: int | None = None           # bar the value belongs to; default = emit bar
+    index: int | None = None
 
 
 @dataclass(frozen=True)
 class Mark:
-    index: int                         # candle the marker sits on (<= emit bar)
+    """A marker on a candle; the same key keeps only the highest rank."""
+
+    index: int
     position: Position
     text: str = ""
     shape: str = "circle"
     color: str = "#888780"
-    key: Hashable | None = None        # same key => higher rank replaces lower
+    key: Hashable | None = None
     rank: int = 0
 
 
 @dataclass(frozen=True)
 class Draw:
-    kind: str                          # name of the chart method that draws it
+    """A drawing; kind is the chart method name, the same key replaces the old one."""
+
+    kind: str
     args: dict = field(default_factory=dict)
-    key: Hashable | None = None        # same key => replaces the earlier drawing
+    key: Hashable | None = None
+
 
     def indices(self) -> list[int]:
-        return [v for k, v in self.args.items()
-                if (k == "index" or k.endswith("_index")) and v is not None]
+        return [v for k, v in self.args.items() if k.endswith("index") and v is not None]
 
 
 Output = Value | Mark | Draw
@@ -89,7 +81,7 @@ Output = Value | Mark | Draw
 MARK_SHAPES = ("circle", "square", "arrow_up", "arrow_down")
 MARK_POSITIONS = ("above", "below")
 
-# Draw.kind -> (required args, optional args). Bar positions are `*index` args.
+# Draw kind -> (required args, optional args)
 DRAW_ARGS: dict[str, tuple[frozenset, frozenset]] = {
     "horizontal_line": (frozenset({"price"}), frozenset({"color", "width", "style", "text"})),
     "vertical_line": (frozenset({"index"}), frozenset({"color", "width", "style", "text"})),
@@ -126,41 +118,35 @@ def vspan(i0: int, i1: int | None = None, *, key=None, color="rgba(255, 193, 7, 
 
 
 class Indicator:
-    """Streaming indicator. Subclass it and implement ``on_bar``."""
+    """Streaming indicator: subclass it and implement on_bar."""
 
     name: str = ""
+    data_kind = None        # hook: the data type this indicator consumes (your DataKind enum)
+    outputs: tuple = ()     # hook: the output types it may emit (your drawing enum); empty = any
+
 
     def __repr__(self) -> str:
-        import inspect
-        try:
-            params = [p for p in inspect.signature(type(self).__init__).parameters if p != "self"]
-        except (TypeError, ValueError):
-            params = []
+        params = [p for p in inspect.signature(type(self).__init__).parameters if p != "self"]
         args = ", ".join(f"{p}={getattr(self, p)!r}" for p in params if hasattr(self, p))
         return f"{type(self).__name__}({args})"
 
+
     def series(self) -> list[SeriesSpec]:
-        """Lines/histograms this indicator writes ``Value`` outputs to."""
+        """Lines and histograms this indicator writes Values to."""
         return []
 
+
     def reset(self) -> None:
-        """Clear all state. Called before every run, so reruns are identical."""
+        """Clear all state; called before every run."""
+
 
     def on_bar(self, bars: Bars) -> Iterable[Output] | None:
-        """Called once per bar, oldest first. Yield/return outputs, or None."""
+        """Called once per bar, oldest first; yield outputs."""
         raise NotImplementedError
 
 
 class BatchIndicator(Indicator):
-    """Vectorised indicator. Compute over the whole frame in one go.
-
-    ``compute`` yields ``(emitted_at, output)`` pairs, where ``emitted_at`` is
-    the first bar on which that output could have been known. Use
-    ``dt_replay_lab.check_lookahead`` to confirm that claim.
-    """
+    """Vectorised indicator: compute yields (bar it became knowable, output) pairs."""
 
     def compute(self, df) -> Iterable[tuple[int, Output]]:
         raise NotImplementedError
-
-    def on_bar(self, bars: Bars):  # pragma: no cover - never called for batch
-        raise TypeError("BatchIndicator is computed via compute(), not on_bar()")

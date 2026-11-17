@@ -76,3 +76,15 @@ engine.run(df_or_csv_path, MyIdea(period=20), SMA(50))   # replay window
 rec = engine.record(df, MyIdea())                        # no window
 rec.visualizer(cursor=400).show()                        # static chart at bar 400
 ```
+
+## Hooks for your own data and output types
+
+These are empty by default and ready for your enums.
+
+| Hook | Where | What it checks |
+|---|---|---|
+| `Indicator.data_kind` | your indicator | must equal the feed's `data_kind`, or the run stops |
+| `Indicator.outputs` | your indicator | if non-empty, every output's kind must be listed (`engine/validator.py:output_kind`) |
+| `Feed` | `engine/feed.py` | any object with `__len__`, `next()` and `data_kind` can replace it; `next()` is engine-owned |
+
+`live_run(feed, indicators)` takes a feed, so a custom stream (ticks, order book, your cursor) plugs straight in.

@@ -60,27 +60,37 @@ if __name__ == "__main__":
 
 
 def _names(raw: str) -> tuple[str, str, str]:
+    """'my cool idea' -> ('my_cool_idea', 'MyCoolIdea', 'My Cool Idea')"""
     words = [w for w in re.split(r"[^0-9a-zA-Z]+", raw) if w]
+
     if not words:
         raise SystemExit("usage: dt-replay-lab new <name>   e.g. dt-replay-lab new breakout")
-    snake = "_".join(w.lower() for w in words)
+
     cls = "".join(w[:1].upper() + w[1:] for w in words)
+
     if cls[0].isdigit():
         raise SystemExit("name must not start with a digit")
-    return snake, cls, " ".join(w.capitalize() for w in words)
+
+    return "_".join(w.lower() for w in words), cls, " ".join(w.capitalize() for w in words)
 
 
 def new_indicator(name: str, directory: str | Path = ".") -> Path:
+    """Write <name>.py from the template; never overwrites."""
     snake, cls, title = _names(name)
     path = Path(directory) / f"{snake}.py"
+
     if path.exists():
         raise SystemExit(f"{path} already exists; not overwriting")
+
     path.write_text(TEMPLATE.format(cls=cls, title=title, filename=path.name))
+
     return path
 
 
 def main(argv: list[str]) -> None:
+    """CLI: dt-replay-lab new <name> [directory]"""
     if not argv or argv[0] in ("-h", "--help"):
         raise SystemExit("usage: dt-replay-lab new <name> [directory]")
+
     path = new_indicator(argv[0], argv[1] if len(argv) > 1 else ".")
     print(f"created {path}\nnext:  uv run python {path}")
