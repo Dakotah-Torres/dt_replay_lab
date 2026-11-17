@@ -1,3 +1,4 @@
-from . import main
+from finresearch import main
 
-main()
+if __name__ == "__main__":
+    main()

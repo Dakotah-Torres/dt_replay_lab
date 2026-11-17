@@ -46,6 +46,19 @@ SWING_STYLE = {
 }
 
 
+def apply_theme(chart, right_offset: int = 0) -> None:
+    """Apply the light theme to a chart or sub-chart."""
+    t = THEME
+    chart.layout(background_color=t["bg"], text_color=t["text"], font_family=t["font"])
+    chart.grid(color=t["grid"])
+    chart.candle_style(up_color=t["up"], down_color=t["down"])
+    chart.price_scale(border_visible=True, border_color=t["border"], text_color=t["text"])
+    chart.time_scale(right_offset=right_offset, border_visible=True, border_color=t["border"])
+    chart.crosshair(vert_color=t["crosshair"], horz_color=t["crosshair"],
+                    vert_label_background_color=t["crosshair_label"],
+                    horz_label_background_color=t["crosshair_label"])
+
+
 @dataclass
 class _Pane:
     height: float
@@ -267,14 +280,4 @@ class Visualizer:
         for level in spec["levels"]:
             line.horizontal_line(level, color="#b0b5bf", width=1, style="dashed")
 
-    @staticmethod
-    def _style(chart) -> None:
-        t = THEME
-        chart.layout(background_color=t["bg"], text_color=t["text"], font_family=t["font"])
-        chart.grid(color=t["grid"])
-        chart.candle_style(up_color=t["up"], down_color=t["down"])
-        chart.price_scale(border_visible=True, border_color=t["border"], text_color=t["text"])
-        chart.time_scale(border_visible=True, border_color=t["border"])
-        chart.crosshair(vert_color=t["crosshair"], horz_color=t["crosshair"],
-                        vert_label_background_color=t["crosshair_label"],
-                        horz_label_background_color=t["crosshair_label"])
+    _style = staticmethod(lambda chart: apply_theme(chart))

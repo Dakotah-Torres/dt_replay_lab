@@ -4,6 +4,12 @@ Research sandbox for splitting price action into **minor / intermediate / major*
 
 ```
 src/finresearch/
+  engine.py      engine.run(data, *indicators): the replay entry point
+  indicator.py   Indicator / BatchIndicator contract, Value / Mark / Draw outputs
+  recording.py   runs indicators once, answers "what is visible at bar N?"
+  player.py      replay window: play / pause / step / rewind
+  checks.py      lookahead checker
+  indicators/    SMA, RSI, SwingIndicator (templates for your own)
   data.py        load_ohlc(), normalize_ohlc(), make_test_data()
   swings.py      Swing, detect_minor_swings(), promote(), build_hierarchy()
   visualizer.py  Visualizer (candles, indicators, markers, drawings)
@@ -11,6 +17,50 @@ data/            sample csv files
 ```
 
 Run the demo: `uv run finresearch` (or `uv run python -m finresearch`).
+
+## Replay engine
+
+```python
+from finresearch import engine, SMA, RSI, SwingIndicator, make_test_data
+
+engine.run(make_test_data(), SMA(20), RSI(14), SwingIndicator(n=5))
+```
+
+Opens a window that plays candles in one at a time. Buttons: `|<  -10  -1  Play  +1  +10  >|` and a speed switcher.
+Keys: **Space** play/pause, **←/→** step 1, **Shift+←/→** step 10.
+
+How it stays honest: the indicator is fed one bar at a time and only sees bars up to the current one (`Bars` is a read-only prefix view). Everything it emits is stamped with the bar it was emitted on, and the replay shows it from that bar onward, so a swing confirmed 5 bars late appears 5 bars late. Rewinding just moves the cursor, so bar N always looks the same however you got there.
+
+### Writing an indicator
+
+Start with `uv run finresearch new my_idea`, which writes a ready-to-edit file. The full rules are in [docs/indicator-contract.md](docs/indicator-contract.md). Short version:
+
+```python
+from finresearch import engine, Indicator, Mark, SMA, hline
+
+class Breakout(Indicator):
+    def __init__(self, n=20):
+        self.n, self.name = n, f"Breakout {n}"
+
+    def reset(self):                      # called before every run
+        self.level = None
+
+    def on_bar(self, bars):               # bars.close[-1] is the current bar
+        if len(bars) > self.n and bars.close[-1] > bars.high[-self.n - 1:-1].max():
+            yield Mark(bars.i, "below", "BO", "arrow_up", "#00a67e")
+            yield hline(float(bars.close[-1]), key="last-bo")   # same key replaces the old line
+
+engine.run("data/my.csv", Breakout(20), SMA(50))
+```
+
+- `Value(series, v)` needs a `SeriesSpec` declared in `series()`. `pane="rsi"` puts it in its own sub-pane.
+- `Mark(index, ...)` may point at an earlier bar than the current one (a confirmed swing), never a later one (raises `LookaheadError`).
+- Drawings: `hline`, `vline`, `trend`, `box`, `vspan`. Reuse a `key` to replace one.
+- Vectorised indicators: subclass `BatchIndicator` and yield `(emitted_at, output)` from `compute(df)`.
+- `engine.check(df, indicator)` checks the whole contract (structure, crashes, determinism, lookahead) and prints PASS/WARN/FAIL per rule.
+- `engine.record(df, ...)` gives the `Recording` with no window; `rec.visualizer(cursor)` gives a static chart at any bar.
+
+Use it from another project: `uv add --editable /path/to/finresearch` (or `pip install -e`).
 
 ## Swings
 

@@ -69,6 +69,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "lightweight-charts" },
+    { name = "numpy" },
     { name = "pandas" },
     { name = "pywebview", extra = ["qt"] },
 ]
@@ -76,6 +77,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "lightweight-charts", specifier = ">=2.1" },
+    { name = "numpy", specifier = ">=2.0" },
     { name = "pandas", specifier = ">=3.1.1" },
     { name = "pywebview", extras = ["qt"], specifier = ">=6.2.1" },
 ]
